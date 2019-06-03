@@ -14,6 +14,8 @@ module.exports = class SentryTransport extends Transport {
   }
 
   log(info, callback) {
+    console.log('info: ');
+    console.log(info);
     setImmediate(() => {
       this.emit('logged', info);
     });
