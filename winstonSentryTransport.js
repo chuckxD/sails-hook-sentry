@@ -1,5 +1,6 @@
 var Transport = require('winston-transport');
 var util = require('util');
+var sentryNode = require('@sentry/node');
 
 //
 // Inherit from `winston-transport` so you can take advantage
