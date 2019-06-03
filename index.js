@@ -38,10 +38,16 @@ module.exports = function Sentry(sails) {
 
       sails.sentry = Sentry;
 
+      sails.config.log = {
+        level: 'error',
+        custom: sails.sentry.captureException,
+        inspect: false
+      };
+
       // handles Bluebird's promises unhandled rejections
       process.on('unhandledRejection', function(reason) {
         console.error('Unhandled rejection:', reason);
-        sentry.captureException(reason);
+        sails.sentry.captureException(reason);
       });
 
       // We're done initializing.
