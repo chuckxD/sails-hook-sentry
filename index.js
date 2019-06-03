@@ -1,5 +1,5 @@
 var winston = require('winston');
-var customLogger = new winston.Logger();
+var WinstonSentryTransport = require('./winstonSentryTransport');
 
 module.exports = function Sentry(sails) {
   return {
@@ -23,14 +23,12 @@ module.exports = function Sentry(sails) {
         return cb();
       }
 
-      const Sentry = require('@sentry/node');
-      Sentry.init({ dsn: settings.dsn, ...settings.options });
+      var winstonSentryTransport = new WinstonSentryTransport(settings);
+      sails.sentry = winstonSentryTransport.sentry;
 
-      sails.sentry = Sentry;
-
-      const logger = new winston.Logger({
+      var logger = new winston.Logger({
         transports: [
-          Sentry
+          winstonSentryTransport
         ]
       });
 
