@@ -10,13 +10,7 @@ module.exports = class SentryTransport extends Transport {
   constructor(settings) {
     super(settings);
 
-    sentry = sentryNode.init({ dsn: settings.dsn, ...settings.options });
-    //
-    // Consume any custom options here. e.g.:
-    // - Connection information for databases
-    // - Authentication information for APIs (e.g. loggly, papertrail,
-    //   logentries, etc.).
-    //
+    this.sentry = sentryNode.init({ dsn: settings.dsn, ...settings.options });
   }
 
   log(info, callback) {
@@ -24,7 +18,13 @@ module.exports = class SentryTransport extends Transport {
       this.emit('logged', info);
     });
 
-    // Perform the writing to the remote service
+    try {
+      this.sentry.captureException(info, extra, function() {
+        callback(null, true);
+      });
+    } catch(err) {
+      console.error(err);
+    }
 
     callback();
   }

@@ -26,10 +26,11 @@ module.exports = function Sentry(sails) {
       var winstonSentryTransport = new WinstonSentryTransport(settings);
       sails.sentry = winstonSentryTransport.sentry;
 
-      var logger = new winston.Logger({
+      var logger = winston.createLogger({
         transports: [
           winstonSentryTransport
-        ]
+        ],
+        level: 'error'
       });
 
       sails.config.log = {
