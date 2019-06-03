@@ -1,3 +1,6 @@
+var winston = require('winston');
+var customLogger = new winston.Logger();
+
 module.exports = function Sentry(sails) {
   return {
     /**
@@ -7,21 +10,8 @@ module.exports = function Sentry(sails) {
      * the hook is itself configurable, so we can't just return
      * an object.
      */
-    defaults: {
-      __configKey__: {
-        // Set autoreload to be active by default
-        active: true,
-        dsn: null,
-        options: {}
-      }
-    },
 
-    /**
-     * Initialize the hook
-     * @param  {Function} cb Callback for when we're done initializing
-     * @return {Function} cb Callback for when we're done initializing
-     */
-    initialize: function(cb) {
+    configure: function() {
       var settings = sails.config[this.configKey];
       if (!settings.active) {
         sails.log.info('Autoreload hook deactivated.');
@@ -38,12 +28,34 @@ module.exports = function Sentry(sails) {
 
       sails.sentry = Sentry;
 
+      const logger = new winston.Logger({
+        transports: [
+          Sentry
+        ]
+      });
+
       sails.config.log = {
         level: 'error',
-        custom: sails.sentry.captureException,
+        custom: logger,
         inspect: false
       };
+    },
 
+    defaults: {
+      __configKey__: {
+        // Set autoreload to be active by default
+        active: true,
+        dsn: null,
+        options: {}
+      }
+    },
+
+    /**
+     * Initialize the hook
+     * @param  {Function} cb Callback for when we're done initializing
+     * @return {Function} cb Callback for when we're done initializing
+     */
+    initialize: function(cb) {
       // handles Bluebird's promises unhandled rejections
       process.on('unhandledRejection', function(reason) {
         console.error('Unhandled rejection:', reason);
