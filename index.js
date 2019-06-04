@@ -25,7 +25,14 @@ module.exports = function Sentry(sails) {
           level: sails.config.log.level
         });
 
+        const levels = Object.keys(sails.log).map((level, i) => {
+          return {
+            level: i
+          };
+        });
+
         sails.config.log = {
+          levels
           level: sails.config.log.level,
           custom: logger,
           inspect: false
