@@ -16,7 +16,7 @@ module.exports = class SentryTransport extends Transport {
 
   log(info, callback) {
     setImmediate(() => {
-      this.emit('logged', info);
+      console.log(info);
     });
 
     try {
@@ -25,11 +25,9 @@ module.exports = class SentryTransport extends Transport {
       if (minLogLevel >= currLogLevel) {
         this.sentry.captureException(info);
       }
-      callback();
     } catch(err) {
       console.error(err);
     }
-
     callback();
   }
 };
