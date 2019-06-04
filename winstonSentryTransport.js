@@ -10,7 +10,7 @@ module.exports = class SentryTransport extends Transport {
   constructor(settings) {
     super(settings);
 
-    this.sentry = sentryNode.init({ dsn: settings.dsn, ...settings.options });
+    var sentry = sentryNode.init({ dsn: settings.dsn, ...settings.options });
   }
 
   log(info, callback) {
