@@ -32,7 +32,7 @@ module.exports = function Sentry(sails) {
         });
 
         sails.config.log = {
-          levels
+          levels,
           level: sails.config.log.level,
           custom: logger,
           inspect: false
