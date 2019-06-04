@@ -13,31 +13,26 @@ module.exports = function Sentry(sails) {
 
     configure: function() {
       var settings = sails.config[this.configKey];
-      if (!settings.active) {
-        sails.log.info('Autoreload hook deactivated.');
-        return cb();
+      if (settings.dsn && settings.active) {
+
+        var winstonSentryTransport = new WinstonSentryTransport(settings);
+        sails.sentry = winstonSentryTransport.sentry;
+
+        var logger = createLogger({
+          transports: [
+            winstonSentryTransport
+          ],
+          level: sails.config.log.level
+        });
+
+        sails.config.log = {
+          level: sails.config.log.level,
+          custom: logger,
+          inspect: false
+        };
+      } else {
+        console.info('Sentry not enabled! DSN not defined, or has been inactivated.');
       }
-
-      if (!settings.dsn) {
-        sails.log.info('DSN for Sentry is required.');
-        return cb();
-      }
-
-      var winstonSentryTransport = new WinstonSentryTransport(settings);
-      sails.sentry = winstonSentryTransport.sentry;
-
-      var logger = createLogger({
-        transports: [
-          winstonSentryTransport
-        ],
-        level: 'error'
-      });
-
-      sails.config.log = {
-        level: 'error',
-        custom: logger,
-        inspect: false
-      };
     },
 
     defaults: {

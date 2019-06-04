@@ -10,20 +10,22 @@ module.exports = class SentryTransport extends Transport {
   constructor(settings) {
     super(settings);
 
-    var sentry = sentryNode.init({ dsn: settings.dsn, ...settings.options });
+    sentryNode.init({ dsn: settings.dsn, ...settings.options });
+    this.sentry = sentryNode;
   }
 
   log(info, callback) {
-    console.log('info: ');
-    console.log(info);
     setImmediate(() => {
       this.emit('logged', info);
     });
 
     try {
-      this.sentry.captureException(info, extra, function() {
-        callback(null, true);
-      });
+      const minLogLevel = Object.keys(sails.log).indexOf(process.env.SENTRY_LOG_LEVEL || 'error');
+      const currLogLevel = Object.keys(sails.log).indexOf(info.level);
+      if (minLogLevel >= currLogLevel) {
+        this.sentry.captureException(info);
+      }
+      callback();
     } catch(err) {
       console.error(err);
     }
