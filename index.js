@@ -1,4 +1,4 @@
-const { createLogger } = require('winston');
+const { createLogger, format } = require('winston');
 const WinstonSentryTransport = require('./winstonSentryTransport');
 
 module.exports = function Sentry(sails) {
@@ -19,16 +19,19 @@ module.exports = function Sentry(sails) {
         sails.sentry = winstonSentryTransport.sentry;
 
         var logger = createLogger({
+          format: format.combine(
+            format.splat(),
+            format.simple()
+          ),
           transports: [
             winstonSentryTransport
           ],
           level: sails.config.log.level
         });
 
-        const levels = Object.keys(sails.log).map((level, i) => {
-          return {
-            level: i
-          };
+        const levels = {};
+        Object.keys(sails.log).map((level, i) => {
+          levels[level] = i;
         });
 
         sails.config.log = {
@@ -60,7 +63,9 @@ module.exports = function Sentry(sails) {
       // handles Bluebird's promises unhandled rejections
       process.on('unhandledRejection', function(reason) {
         console.error('Unhandled rejection:', reason);
-        sails.sentry.captureException(reason);
+        if (sails.sentry) {
+          sails.sentry.captureException(reason);
+        }
       });
 
       // We're done initializing.

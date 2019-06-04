@@ -16,14 +16,18 @@ module.exports = class SentryTransport extends Transport {
 
   log(info, callback) {
     setImmediate(() => {
-      console.log(info);
+      if (info.meta) {
+        console.log(info.meta);
+      } else {
+        console.log(info.message);
+      }
     });
 
     try {
       const minLogLevel = Object.keys(sails.log).indexOf(process.env.SENTRY_LOG_LEVEL || 'error');
       const currLogLevel = Object.keys(sails.log).indexOf(info.level);
-      if (minLogLevel >= currLogLevel) {
-        this.sentry.captureException(info);
+      if (minLogLevel >= currLogLevel && this.sentry) {
+        this.sentry.captureException(info.meta);
       }
     } catch(err) {
       console.error(err);
