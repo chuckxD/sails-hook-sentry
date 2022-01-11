@@ -34,10 +34,14 @@ module.exports = function Sentry(sails) {
           levels[level] = i;
         });
 
+        var logHelper = {
+          log: logger.info.bind(logger)
+        };
+
         sails.config.log = {
           levels,
           level: sails.config.log.level,
-          custom: logger,
+          custom: logHelper,
           inspect: false
         };
       } else {
