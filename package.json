@@ -1,6 +1,6 @@
 {
   "name": "sails-hook-sentry",
-  "version": "2.0.0-beta.2",
+  "version": "2.0.1-beta.3",
   "description": "Sails hook for Sentry (raven-node)",
   "main": "index.js",
   "keywords": [
@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "@sentry/node": "^5.3.0",
-    "winston": "3.1.0",
+    "winston": "3.4.0",
     "winston-transport": "^4.3.0"
   },
   "devDependencies": {
