@@ -1,6 +1,6 @@
 var Transport = require('winston-transport');
-var util = require('util');
 var sentryNode = require('@sentry/node');
+var { nodeProfilingIntegration } = require("@sentry/profiling-node");
 
 //
 // Inherit from `winston-transport` so you can take advantage
@@ -10,7 +10,12 @@ module.exports = class SentryTransport extends Transport {
   constructor(settings) {
     super(settings);
 
-    let initSettings = { dsn: settings.dsn };
+    let initSettings = {
+      dsn: settings.dsn,
+      integrations: [
+        nodeProfilingIntegration(),
+      ],
+    };
     if (!!settings.options) {
       for (var property in settings.options) {
         if (settings.options.hasOwnProperty(property)) {
